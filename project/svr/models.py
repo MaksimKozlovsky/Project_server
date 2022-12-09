@@ -7,9 +7,10 @@ from django.db import models
 В комментариях пишет к какому времени готовить заказ.
 Оплата как на месте так и через ТГ бота.  
 """
-
+# 15-48 -> 16-10
 
 class Client(models.Model):
+
     client_status = (
         ('Silver', '1 cup of coffee'),
         ('Gold', '2 cup of coffee'),
@@ -25,43 +26,53 @@ class Client(models.Model):
         return self.client_name
 
 
-class Coffee(models.Model):
-    coffee_choices = (
-        ('A', 'Americano'),
-        ('C', 'Cappuccino'),
-        ('L', 'Latte'),
-    )
+class Order(models.Model):
+    Americano = 'A'
+    Cappuccino = 'C'
+    Latte = 'L'
+    coffee_choices = [
+        (Americano, 'Americano'),
+        (Cappuccino, 'Cappuccino'),
+        (Latte, 'Latte'),
+    ]
 
     coffee_choices = models.CharField(max_length=1, choices=coffee_choices,
                                       related_name='coffee', verbose_name='Кофе на выбор')
     coffee = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='coffee')
-
-    def __str__(self) -> str:
-        return f'{self.coffee} | {self.coffee_choices}'
-
-
-class Order(models.Model):
     order = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='order')
+
+    need_a_sugar = (
+        ('Y', 'Yes'),
+        ('N', 'No')
+    )
 
     sugar_choices = (
         ('W', 'White sugar'),
         ('P', 'Piece sugar'),
         ('B', 'Brown sugar'),
     )
-    sugar_choices = models.CharField(max_length=1, choices=sugar_choices,
-                                     related_name='sugar', verbose_name='Сахар на выбор')
-    sugar = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='sugar')
 
-    desert_choices = (
+    need_sugar = models.BooleanField(Client, choices=need_a_sugar, default=False)
+    if need_sugar:
+        sugar = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='sugar')
+        sugar_choices = models.CharField(max_length=1, choices=sugar_choices,
+                                         related_name='sugar', verbose_name='Сахар на выбор')
+
+    def __str__(self):
+        return f'{self.order} | {self.coffee_choices} {self.sugar_choices}'
+
+
+class Desert(models.Model):
+    desert_choice = (
         ('T', 'Tiramisu'),
         ('C', 'Cheesecake'),
         ('B', 'Brownie'),
     )
-    desert_choices = models.CharField(max_length=1, choices=desert_choices)
+    desert_choices = models.CharField(max_length=1, choices=desert_choice)
     desert = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='desert')
 
     def __str__(self):
-        return f'{self.order} | {self.sugar_choices} {self.desert_choices}'
+        return f'{self.desert} | {self.desert_choices}'
 
 
 class Comments(models.Model):
@@ -73,7 +84,7 @@ class Comments(models.Model):
 class Delivery(models.Model):
     delivery_choices = (
         ('Y', 'Yes'),
-        ('N', 'Now'),
+        ('N', 'No'),
     )
     delivery = models.BooleanField(Client, choices=delivery_choices, default=False)
     if delivery_choices:
