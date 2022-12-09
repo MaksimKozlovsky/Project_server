@@ -18,6 +18,8 @@ class Client(models.Model):
 
     client_name = models.CharField(max_length=100, related_name='client', verbose_name='Клиент')
     client_rate = models.CharField(max_length=8, choices=client_status)
+    telegram_id = models.PositiveIntegerField(null=True)
+    telegram_payload = models.JSONField(null=True)
 
     def __str__(self):
         return self.client_name
@@ -38,7 +40,9 @@ class Coffee(models.Model):
         return f'{self.coffee} | {self.coffee_choices}'
 
 
-class Sugar(models.Model):
+class Order(models.Model):
+    order = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='order')
+
     sugar_choices = (
         ('W', 'White sugar'),
         ('P', 'Piece sugar'),
@@ -48,11 +52,6 @@ class Sugar(models.Model):
                                      related_name='sugar', verbose_name='Сахар на выбор')
     sugar = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='sugar')
 
-    def __str__(self) -> str:
-        return f'{self.sugar} | {self.sugar_choices}'
-
-
-class Dessert(models.Model):
     desert_choices = (
         ('T', 'Tiramisu'),
         ('C', 'Cheesecake'),
@@ -62,15 +61,23 @@ class Dessert(models.Model):
     desert = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='desert')
 
     def __str__(self):
-        return f'{self.desert} | {self.desert_choices}'
-
-
-class Order(models.Model):
-    order = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='order')
+        return f'{self.order} | {self.sugar_choices} {self.desert_choices}'
 
 
 class Comments(models.Model):
-    comment = models.CharField(max_length=250, null=True, blank=True)
+    comment = models.CharField(Order, max_length=250, null=True, blank=True)
     order_created = models.DateTimeField(auto_now_add=True)
     order_receipt = models.DateTimeField(blank=True, null=True)
+
+
+class Delivery(models.Model):
+    delivery_choices = (
+        ('Y', 'Yes'),
+        ('N', 'Now'),
+    )
+    delivery = models.BooleanField(Client, choices=delivery_choices, default=False)
+    if delivery_choices:
+        delivery_address = models.CharField(max_length=150, verbose_name='Укажите этаж и кабинет',
+                                            null=True, blank=True)
+
 
