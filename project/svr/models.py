@@ -8,87 +8,104 @@ from django.db import models
 Оплата как на месте так и через ТГ бота.  
 """
 # 15-48 -> 16-10
+# Poetry
+
+
+# class Catalog(models.Model):
+#
+#     name = models.CharField(max_length=100, verbose_name='Наимерование')
+#
+#     category_assortment = (
+#         ('C', 'Coffee'),
+#         ('D', 'Desert'),
+#     )
+#     category = models.CharField(max_length=1, choices=category_assortment, verbose_name='Категория')
+#     price = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Цена', null=True, blank=True)
+#
+#     def __str__(self):
+#         return self.name
+
 
 class Client(models.Model):
 
-    client_status = (
-        ('Silver', '1 cup of coffee'),
-        ('Gold', '2 cup of coffee'),
-        ('Platinum', '3 and more cup of coffee'),
+    client_st = (
+        ('S', 'Silver'),
+        ('G', 'Gold'),
+        ('P', 'Platinum'),
     )
 
-    client_name = models.CharField(max_length=100, related_name='client', verbose_name='Клиент')
-    client_rate = models.CharField(max_length=8, choices=client_status)
-    telegram_id = models.PositiveIntegerField(null=True)
-    telegram_payload = models.JSONField(null=True)
+    client_name = models.CharField(max_length=100, verbose_name='Клиент')
+    client_status = models.CharField(max_length=1, choices=client_st, null=True, blank=True)
+    telegram_id = models.PositiveIntegerField(null=True, blank=True)
+    telegram_payload = models.JSONField(null=True, blank=True)
 
     def __str__(self):
         return self.client_name
 
 
-class Order(models.Model):
-    Americano = 'A'
-    Cappuccino = 'C'
-    Latte = 'L'
-    coffee_choices = [
-        (Americano, 'Americano'),
-        (Cappuccino, 'Cappuccino'),
-        (Latte, 'Latte'),
-    ]
+class Coffee(models.Model):
 
-    coffee_choices = models.CharField(max_length=1, choices=coffee_choices,
-                                      related_name='coffee', verbose_name='Кофе на выбор')
-    coffee = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='coffee')
-    order = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='order')
-
-    need_a_sugar = (
-        ('Y', 'Yes'),
-        ('N', 'No')
-    )
-
-    sugar_choices = (
-        ('W', 'White sugar'),
-        ('P', 'Piece sugar'),
-        ('B', 'Brown sugar'),
-    )
-
-    need_sugar = models.BooleanField(Client, choices=need_a_sugar, default=False)
-    if need_sugar:
-        sugar = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='sugar')
-        sugar_choices = models.CharField(max_length=1, choices=sugar_choices,
-                                         related_name='sugar', verbose_name='Сахар на выбор')
+    coffee = models.CharField(max_length=100, verbose_name='Кофе')
+    coffee_price = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Цена кофе')
 
     def __str__(self):
-        return f'{self.order} | {self.coffee_choices} {self.sugar_choices}'
+        return self.coffee
 
 
 class Desert(models.Model):
-    desert_choice = (
-        ('T', 'Tiramisu'),
-        ('C', 'Cheesecake'),
-        ('B', 'Brownie'),
-    )
-    desert_choices = models.CharField(max_length=1, choices=desert_choice)
-    desert = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='desert')
+
+    desert = models.CharField(max_length=100, verbose_name='Десерт')
+    desert_price = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Цена десерта')
 
     def __str__(self):
-        return f'{self.desert} | {self.desert_choices}'
+        return self.desert
 
 
-class Comments(models.Model):
-    comment = models.CharField(Order, max_length=250, null=True, blank=True)
+class Order(models.Model):
+    client_name = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='name')
+    coffee = models.ForeignKey(Coffee, on_delete=models.CASCADE, related_name='coffee_order')
+    desert = models.ForeignKey(Desert, on_delete=models.CASCADE, related_name='desert_order', null=True, blank=True)
+    comment = models.ForeignKey('Comment', on_delete=models.CASCADE, null=True, blank=True)
+    delivery = models.ForeignKey('Delivery', on_delete=models.CASCADE, null=True, blank=True)
+
+    @property
+    def total_price(self):
+        pass
+
+    # sugar_choices = (
+    #     ('W', 'White sugar'),
+    #     ('P', 'Piece sugar'),
+    #     ('B', 'Brown sugar'),
+    # )
+    #
+    # need_sugar = models.BooleanField(Client, choices=need_a_sugar, default=False)
+    # if need_sugar:
+    #     sugar = models.ForeignKey(Client, related_name='sugar', on_delete=models.CASCADE)
+    #     sugar_choices = models.CharField(max_length=1, choices=sugar_choices,
+    #                                      verbose_name='Сахар на выбор')
+
+#     def __str__(self):
+#         return self.coffee
+# #        return f'{self.order} | {self.coffee} {self.sugar_choices}'
+
+
+class Comment(models.Model):
+    comment = models.CharField(max_length=250, verbose_name='Коментарий к заказу')
     order_created = models.DateTimeField(auto_now_add=True)
     order_receipt = models.DateTimeField(blank=True, null=True)
 
+    def __str__(self):
+        return self.comment
+
 
 class Delivery(models.Model):
-    delivery_choices = (
-        ('Y', 'Yes'),
-        ('N', 'No'),
-    )
-    delivery = models.BooleanField(Client, choices=delivery_choices, default=False)
-    if delivery_choices:
-        delivery_address = models.CharField(max_length=150, verbose_name='Укажите этаж и кабинет',
-                                            null=True, blank=True)
+    delivery = models.CharField(max_length=100, verbose_name='Способ доставки')
+
+    def __str__(self):
+        return self.delivery
+
+
+
+
 
 
