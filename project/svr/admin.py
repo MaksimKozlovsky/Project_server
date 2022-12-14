@@ -3,16 +3,16 @@ from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.contrib import messages
 
-from svr.models import Client, Coffee, Desert, Order, Comment, Delivery
+from svr.models import Client, Order, Comment, Delivery, Catalog, Extra
 
 
 # Register your models here.
 
-# @admin.register(Catalog)
-# class CatalogAdmin(admin.ModelAdmin):
-#     list_display = ('name', 'category', 'price',)
-#     list_filter = ('category',)
-#     search_fields = ('name',)
+@admin.register(Catalog)
+class CatalogAdmin(admin.ModelAdmin):
+    list_display = ('name', 'category', 'price',)
+    list_filter = ('category',)
+    search_fields = ('name',)
 
 
 @admin.register(Client)
@@ -29,18 +29,25 @@ class OrderAdmin(admin.ModelAdmin):
     search_fields = ('client_name',)
 
 
-@admin.register(Coffee)
-class DesertAdmin(admin.ModelAdmin):
-    list_display = ('coffee', 'coffee_price',)
-    list_filter = ('coffee_price',)
-    search_fields = ('coffee',)
+@admin.register(Extra)
+class ExtraAdmin(admin.ModelAdmin):
+    list_display = ('order', 'catalog', 'qty')
+    list_filter = ('order',)
+    search_fields = ('order',)
 
 
-@admin.register(Desert)
-class DesertAdmin(admin.ModelAdmin):
-    list_display = ('desert', 'desert_price',)
-    list_filter = ('desert_price',)
-    search_fields = ('desert',)
+# @admin.register(Coffee)
+# class DesertAdmin(admin.ModelAdmin):
+#     list_display = ('coffee', 'coffee_price',)
+#     list_filter = ('coffee_price',)
+#     search_fields = ('coffee',)
+#
+#
+# @admin.register(Desert)
+# class DesertAdmin(admin.ModelAdmin):
+#     list_display = ('desert', 'desert_price',)
+#     list_filter = ('desert_price',)
+#     search_fields = ('desert',)
 
 
 @admin.register(Comment)

@@ -9,21 +9,22 @@ from django.db import models
 """
 # 15-48 -> 16-10
 # Poetry
+# autocomplite
 
 
-# class Catalog(models.Model):
-#
-#     name = models.CharField(max_length=100, verbose_name='Наимерование')
-#
-#     category_assortment = (
-#         ('C', 'Coffee'),
-#         ('D', 'Desert'),
-#     )
-#     category = models.CharField(max_length=1, choices=category_assortment, verbose_name='Категория')
-#     price = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Цена', null=True, blank=True)
-#
-#     def __str__(self):
-#         return self.name
+class Catalog(models.Model):
+
+    name = models.CharField(max_length=100, verbose_name='Наимерование')
+
+    category_assortment = (
+        ('C', 'Coffee'),
+        ('D', 'Desert'),
+    )
+    category = models.CharField(max_length=1, choices=category_assortment, verbose_name='Категория')
+    price = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Цена', null=True, blank=True)
+
+    def __str__(self):
+        return self.name
 
 
 class Client(models.Model):
@@ -43,50 +44,49 @@ class Client(models.Model):
         return self.client_name
 
 
-class Coffee(models.Model):
-
-    coffee = models.CharField(max_length=100, verbose_name='Кофе')
-    coffee_price = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Цена кофе')
-
-    def __str__(self):
-        return self.coffee
-
-
-class Desert(models.Model):
-
-    desert = models.CharField(max_length=100, verbose_name='Десерт')
-    desert_price = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Цена десерта')
-
-    def __str__(self):
-        return self.desert
+# class Coffee(models.Model):
+#
+#     coffee = models.CharField(max_length=100, verbose_name='Кофе')
+#     coffee_price = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Цена кофе')
+#
+#     def __str__(self):
+#         return self.coffee
+#
+#
+# class Desert(models.Model):
+#
+#     desert = models.CharField(max_length=100, verbose_name='Десерт')
+#     desert_price = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Цена десерта')
+#
+#     def __str__(self):
+#         return self.desert
 
 
 class Order(models.Model):
     client_name = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='name')
-    coffee = models.ForeignKey(Coffee, on_delete=models.CASCADE, related_name='coffee_order')
-    desert = models.ForeignKey(Desert, on_delete=models.CASCADE, related_name='desert_order', null=True, blank=True)
+    coffee = models.ForeignKey(Catalog, on_delete=models.CASCADE, related_name='coffee')
+    desert = models.ForeignKey(Catalog, on_delete=models.CASCADE, related_name='desert', null=True, blank=True)
+    positions = models.ManyToManyField(Catalog, through='Extra')
     comment = models.ForeignKey('Comment', on_delete=models.CASCADE, null=True, blank=True)
     delivery = models.ForeignKey('Delivery', on_delete=models.CASCADE, null=True, blank=True)
 
-    @property
-    def total_price(self):
-        pass
+    def __str__(self):
+        return f'{self.client_name}'
+
+
+class Extra(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    catalog = models.ForeignKey(Catalog, on_delete=models.CASCADE)
+    qty = models.PositiveIntegerField()
+
+    def __str__(self):
+        return f'{self.order} | {self.catalog}'
 
     # sugar_choices = (
     #     ('W', 'White sugar'),
     #     ('P', 'Piece sugar'),
     #     ('B', 'Brown sugar'),
     # )
-    #
-    # need_sugar = models.BooleanField(Client, choices=need_a_sugar, default=False)
-    # if need_sugar:
-    #     sugar = models.ForeignKey(Client, related_name='sugar', on_delete=models.CASCADE)
-    #     sugar_choices = models.CharField(max_length=1, choices=sugar_choices,
-    #                                      verbose_name='Сахар на выбор')
-
-#     def __str__(self):
-#         return self.coffee
-# #        return f'{self.order} | {self.coffee} {self.sugar_choices}'
 
 
 class Comment(models.Model):
