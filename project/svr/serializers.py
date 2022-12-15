@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from svr.models import Client, Order, Comment, Delivery, Catalog, Extra
+from svr.models import Client, Order, Comment, Delivery, Position, Extra
 
 
 class ClientSerializer(serializers.ModelSerializer):
@@ -9,24 +9,10 @@ class ClientSerializer(serializers.ModelSerializer):
         fields = ('id', 'client_name', 'client_status', 'telegram_id', 'telegram_payload')
 
 
-# class CoffeeSerializer(serializers.ModelSerializer):
-#
-#     class Meta:
-#         models = Coffee
-#         fields = ('coffee', 'coffee_price')
-#
-#
-# class DesertSerializers(serializers.ModelSerializer):
-#
-#     class Meta:
-#         models = Desert
-#         fields = ('desert', 'desert_prise')
-
-
-class CatalogSerializers(serializers.ModelSerializer):
+class PositionSerializers(serializers.ModelSerializer):
 
     class Meta:
-        model = Catalog
+        model = Position
         fields = ('name', 'category', 'price',)
 
 

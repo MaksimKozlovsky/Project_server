@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from django.views.generic import CreateView
 from rest_framework import viewsets
-from svr.models import Client, Order, Comment, Delivery, Catalog, Extra
+from svr.models import Client, Order, Comment, Delivery, Position, Extra
 from svr.serializers import ClientSerializer, OrderSerializers, \
-    CommentSerializers, DeliverySerializers, CatalogSerializers, ExtraSerializers
+    CommentSerializers, DeliverySerializers, PositionSerializers, ExtraSerializers
 
 
 class ClientViewSet(viewsets.ModelViewSet):
@@ -11,19 +11,9 @@ class ClientViewSet(viewsets.ModelViewSet):
     serializer_class = ClientSerializer
 
 
-class CatalogViewSet(viewsets.ModelViewSet):
-    queryset = Catalog.objects.all()
-    serializer_class = CatalogSerializers
-
-
-# class CoffeeViewSet(viewsets.ModelViewSet):
-#     queryset = Coffee.objects.all()
-#     serializer_class = CoffeeSerializer
-#
-#
-# class DesertViewSet(viewsets.ModelViewSet):
-#     queryset = Desert.objects.all()
-#     serializer_class = DesertSerializers
+class PositionViewSet(viewsets.ModelViewSet):
+    queryset = Position.objects.all()
+    serializer_class = PositionSerializers
 
 
 class OrderViewSet(viewsets.ModelViewSet):
