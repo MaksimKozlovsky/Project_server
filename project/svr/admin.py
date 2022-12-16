@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.contrib.admin.options import TabularInline
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.contrib import messages
@@ -10,9 +11,9 @@ from svr.models import Client, Order, Comment, Delivery, Position, Extra
 
 @admin.register(Position)
 class PositionAdmin(admin.ModelAdmin):
-    list_display = ('name', 'category', 'price',)
+    list_display = ('position_name', 'category', 'price',)
     list_filter = ('category',)
-    search_fields = ('name',)
+    search_fields = ('position_name',)
 
 
 @admin.register(Client)
@@ -22,8 +23,14 @@ class ClientAdmin(admin.ModelAdmin):
     search_fields = ('client_name',)
 
 
+class Admin(admin.TabularInline):
+    extra = 1
+    model = Extra
+
+
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
+    inlines = (Admin,)
     list_display = ('client_name', 'comment', 'delivery',)
     list_filter = ('client_name',)
     search_fields = ('client_name',)
@@ -31,7 +38,8 @@ class OrderAdmin(admin.ModelAdmin):
 
 @admin.register(Extra)
 class ExtraAdmin(admin.ModelAdmin):
-    list_display = ('order', 'position', 'qty')
+
+    list_display = ('order', 'position_name', 'qty')
     list_filter = ('order',)
     search_fields = ('order',)
 

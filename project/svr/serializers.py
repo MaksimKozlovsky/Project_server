@@ -13,21 +13,29 @@ class PositionSerializers(serializers.ModelSerializer):
 
     class Meta:
         model = Position
-        fields = ('name', 'category', 'price',)
-
-
-class OrderSerializers(serializers.ModelSerializer):
-
-    class Meta:
-        model = Order
-        fields = ('client_name', 'coffee', 'desert', 'comment', 'delivery',)
+        fields = ('position_name', 'category', 'price',)
 
 
 class ExtraSerializers(serializers.ModelSerializer):
 
     class Meta:
         model = Extra
-        fields = '__all__'
+        fields = ('order', 'position_name', 'qty')
+
+
+class OrderSerializers(serializers.ModelSerializer):
+    order_list = ExtraSerializers(source='extra_set', many=True, read_only=True)
+
+    class Meta:
+        model = Order
+        fields = ('client_name', 'order_list', 'comment', 'delivery')
+
+    def create(self, validated_data):
+        order_list = validated_data.pop('order_list')
+        profile_instance = Order.objects.create(**validated_data)
+        for order in order_list:
+            Extra.objects.create(user=profile_instance, **order)
+        return profile_instance
 
 
 class CommentSerializers(serializers.ModelSerializer):

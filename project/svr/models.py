@@ -14,17 +14,17 @@ from django.db import models
 
 class Position(models.Model):
 
-    name = models.CharField(max_length=100, verbose_name='Наимерование')
+    position_name = models.CharField(max_length=100, verbose_name='Наимерование')
 
     category_assortment = (
-        ('C', 'Coffee'),
-        ('D', 'Desert'),
+        ('Coffee', 'Coffee'),
+        ('Desert', 'Desert'),
     )
-    category = models.CharField(max_length=1, choices=category_assortment, verbose_name='Категория')
+    category = models.CharField(max_length=6, choices=category_assortment, verbose_name='Категория')
     price = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Цена')
 
     def __str__(self):
-        return self.name
+        return f'{self.position_name}'
 
 
 class Client(models.Model):
@@ -46,7 +46,7 @@ class Client(models.Model):
 
 class Order(models.Model):
     client_name = models.ForeignKey(Client, on_delete=models.CASCADE, verbose_name='Клиент', related_name='name')
-    positions = models.ManyToManyField(Position, through='Extra')
+    positions = models.ManyToManyField(Position, through='Extra', related_name='coffee')
     comment = models.ForeignKey('Comment', on_delete=models.CASCADE, null=True, blank=True)
     delivery = models.ForeignKey('Delivery', on_delete=models.CASCADE, null=True, blank=True)
 
@@ -56,11 +56,18 @@ class Order(models.Model):
 
 class Extra(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, verbose_name='Заказчик')
-    position = models.ForeignKey(Position, on_delete=models.CASCADE, verbose_name='Каталог')
-    qty = models.PositiveIntegerField(verbose_name='Колличество')
+    position_name = models.ForeignKey(Position, on_delete=models.CASCADE, verbose_name='Каталог')
+    qty = models.IntegerField(verbose_name='Колличество')
 
     def __str__(self):
-        return f'{self.order} | {self.position}'
+        return f'{self.position_name.category} | {self.position_name.price}'
+
+    # def total(self):
+    #     return self.qty * self.position.price
+    #
+    # def __str__(self):
+    #     return f'{self.order.client_name}' \
+    #            f'{self.position.price} * {self.qty} = {self.total}'
 
 
 class Comment(models.Model):

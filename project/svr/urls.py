@@ -5,7 +5,7 @@ from svr.views import ClientViewSet, OrderViewSet, CommentViewSet, DeliveryViewS
 
 router = routers.DefaultRouter()
 router.register(r'clients', ClientViewSet)
-router.register(r'catalog', PositionViewSet)
+router.register(r'position', PositionViewSet)
 router.register(r'order', OrderViewSet)
 router.register(r'extra', ExtraViewSet)
 router.register(r'comment', CommentViewSet)
