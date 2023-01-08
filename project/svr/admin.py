@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.contrib import messages
 
-from svr.models import Client, Order, Comment, Delivery, Position, Extra
+from svr.models import Client, Order, Position, Extra
 
 
 # Register your models here.
@@ -39,19 +39,6 @@ class OrderAdmin(admin.ModelAdmin):
 @admin.register(Extra)
 class ExtraAdmin(admin.ModelAdmin):
 
-    list_display = ('order', 'position_name', 'qty')
+    list_display = ('order', 'position', 'qty')
     list_filter = ('order',)
     search_fields = ('order',)
-
-
-@admin.register(Comment)
-class CommentsAdmin(admin.ModelAdmin):
-    list_display = ('comment', 'order_created', 'order_receipt',)
-    list_filter = ('order_created',)
-    search_fields = ('order_created',)
-
-
-@admin.register(Delivery)
-class DeliveryAdmin(admin.ModelAdmin):
-    list_display = ('delivery',)
-    list_filter = ('delivery',)

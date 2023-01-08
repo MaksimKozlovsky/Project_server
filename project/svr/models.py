@@ -24,7 +24,7 @@ class Position(models.Model):
     price = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Цена')
 
     def __str__(self):
-        return f'{self.position_name}'
+        return self.position_name
 
 
 class Client(models.Model):
@@ -45,10 +45,18 @@ class Client(models.Model):
 
 
 class Order(models.Model):
+
+    d_choice = (
+        ('Самовынос', 'Самовынос'),
+        ('Доставка в бизнес-центре', 'Доставка в бизнес-центре'),
+        ('Доставка Яндекс такси', 'Доставка Яндекс такси'),
+
+    )
+
     client_name = models.ForeignKey(Client, on_delete=models.CASCADE, verbose_name='Клиент', related_name='name')
     positions = models.ManyToManyField(Position, through='Extra', related_name='coffee')
-    comment = models.ForeignKey('Comment', on_delete=models.CASCADE, null=True, blank=True)
-    delivery = models.ForeignKey('Delivery', on_delete=models.CASCADE, null=True, blank=True)
+    comment = models.CharField(max_length=150, null=True, blank=True)
+    delivery = models.CharField(max_length=100, choices=d_choice, null=True, blank=True)
 
     def __str__(self):
         return f'{self.client_name}'
@@ -56,34 +64,11 @@ class Order(models.Model):
 
 class Extra(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, verbose_name='Заказчик')
-    position_name = models.ForeignKey(Position, on_delete=models.CASCADE, verbose_name='Каталог')
+    position = models.ForeignKey(Position, on_delete=models.CASCADE, verbose_name='Каталог')
     qty = models.IntegerField(verbose_name='Колличество')
 
     def __str__(self):
-        return f'{self.position_name.category} | {self.position_name.price}'
-
-    # def total(self):
-    #     return self.qty * self.position.price
-    #
-    # def __str__(self):
-    #     return f'{self.order.client_name}' \
-    #            f'{self.position.price} * {self.qty} = {self.total}'
-
-
-class Comment(models.Model):
-    comment = models.CharField(max_length=250, verbose_name='Коментарий к заказу')
-    order_created = models.DateTimeField(auto_now_add=True)
-    order_receipt = models.DateTimeField(blank=True, null=True)
-
-    def __str__(self):
-        return self.comment
-
-
-class Delivery(models.Model):
-    delivery = models.CharField(max_length=100, verbose_name='Способ доставки')
-
-    def __str__(self):
-        return self.delivery
+        return f'{self.position.category} | {self.position.price}'
 
 
 

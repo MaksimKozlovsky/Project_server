@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from svr.models import Client, Order, Comment, Delivery, Position, Extra
+from svr.models import Client, Order, Position, Extra
 
 
 class ClientSerializer(serializers.ModelSerializer):
@@ -13,41 +13,49 @@ class PositionSerializers(serializers.ModelSerializer):
 
     class Meta:
         model = Position
-        fields = ('position_name', 'category', 'price',)
+        fields = ('id', 'position_name', 'category', 'price',)
 
 
 class ExtraSerializers(serializers.ModelSerializer):
+    position = serializers.CharField(source='position.position_name')
+    order = serializers.CharField(source='order.id', read_only=True)
 
     class Meta:
         model = Extra
-        fields = ('order', 'position_name', 'qty')
+        fields = ('order', 'position', 'qty')
 
 
 class OrderSerializers(serializers.ModelSerializer):
-    order_list = ExtraSerializers(source='extra_set', many=True, read_only=True)
+    positions = ExtraSerializers(source='extra_set', many=True)
+    client_name = serializers.CharField(source='client_name.client_name')
 
     class Meta:
         model = Order
-        fields = ('client_name', 'order_list', 'comment', 'delivery')
+        fields = ('client_name', 'comment', 'delivery', 'positions')
 
     def create(self, validated_data):
-        order_list = validated_data.pop('order_list')
-        profile_instance = Order.objects.create(**validated_data)
-        for order in order_list:
-            Extra.objects.create(user=profile_instance, **order)
-        return profile_instance
 
+        return Order.objects.create(
+            client_name=validated_data['client_name'],
+            comment=validated_data['comment'],
+            delivery=validated_data['delivery'],
+            positions=validated_data['positions'],
+            qty=validated_data['qty']
+        )
 
-class CommentSerializers(serializers.ModelSerializer):
+        # obj: Order = super().create(**validated_data)
+        # positions=validated_data["positions"]
+        # client_name=validated_data["client_name"]
+        #
+        # return Order(**validated_data)
 
-    class Meta:
-        model = Comment
-        fields = ('comment', 'order_created', 'order_receipt')
-
-
-class DeliverySerializers(serializers.ModelSerializer):
-
-    class Meta:
-        model = Delivery
-        fields = ('delivery',)
-
+    # def create(self, validated_data):
+    #     obj: Order = super().create(validated_data)
+    #     validated_data["positions"]
+    #
+    #     obj.extra_set.add
+    #     order_list = validated_data.pop('order_list')
+    #     profile_instance = Order.objects.create(**validated_data)
+    #     for order in order_list:
+    #         Extra.objects.create(profile_instance=profile_instance, **order)
+    #     return profile_instance
