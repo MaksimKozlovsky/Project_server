@@ -63,7 +63,7 @@ class Order(models.Model):
 
 
 class Extra(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, verbose_name='Заказчик')
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, verbose_name='Клиент')
     position = models.ForeignKey(Position, on_delete=models.CASCADE, verbose_name='Каталог')
     qty = models.IntegerField(verbose_name='Колличество')
 

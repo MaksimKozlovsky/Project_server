@@ -18,11 +18,15 @@ class PositionSerializers(serializers.ModelSerializer):
 
 class ExtraSerializers(serializers.ModelSerializer):
     position = serializers.CharField(source='position.position_name')
-    order = serializers.CharField(source='order.id', read_only=True)
+#    order = serializers.CharField(source='order.id', read_only=True)
+
+    def create(self, validated_data):
+        return Extra.objects.create(**validated_data)
 
     class Meta:
         model = Extra
-        fields = ('order', 'position', 'qty')
+        fields = ('position', 'qty')
+#        fields = ('order', 'position', 'qty')
 
 
 class OrderSerializers(serializers.ModelSerializer):
@@ -35,13 +39,20 @@ class OrderSerializers(serializers.ModelSerializer):
 
     def create(self, validated_data):
 
-        return Order.objects.create(
-            client_name=validated_data['client_name'],
-            comment=validated_data['comment'],
-            delivery=validated_data['delivery'],
-            positions=validated_data['positions'],
-            qty=validated_data['qty']
-        )
+        positions = validated_data['positions']
+
+        extra_serializer = ExtraSerializers(data=positions)
+        if extra_serializer.is_valid():
+            extra_serializer.save()
+        return Order.objects.create(**validated_data)
+
+        # return Order.objects.create(
+        #     client_name=validated_data['client_name'],
+        #     comment=validated_data['comment'],
+        #     delivery=validated_data['delivery'],
+        #     positions=validated_data['positions'],
+        #     qty=validated_data['qty']
+        # )
 
         # obj: Order = super().create(**validated_data)
         # positions=validated_data["positions"]

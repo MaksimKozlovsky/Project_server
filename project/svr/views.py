@@ -26,22 +26,6 @@ class PositionViewSet(viewsets.ModelViewSet):
     serializer_class = PositionSerializers
 
 
-@api_view(['GET'])
-def get_ticket(request):
-    all_pos = Position.position_name.objects.all()
-    serializer = PositionSerializers(all_pos, many=True)
-    return Response(serializer.data)
-
-
-    # def create(self, request, *args, **kwargs):
-    #     serializer = self.serializer_class(data=request.data)
-    #
-    #     if serializer.is_valid():
-    #         return Response(status=status.HTTP_201_CREATED)
-    #
-    #     return Response(serializer.errors)
-
-
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializers
