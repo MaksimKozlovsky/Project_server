@@ -7,9 +7,6 @@ from django.db import models
 В комментариях пишет к какому времени готовить заказ. Возможна доставка.
 Оплата как на месте так и через ТГ бота.  
 """
-# 15-48 -> 16-10
-# Poetry
-# autocomplite
 
 
 class Position(models.Model):
@@ -20,8 +17,13 @@ class Position(models.Model):
         ('Coffee', 'Coffee'),
         ('Desert', 'Desert'),
     )
+
+    int_choices = [(x, x) for x in range(1, 11)]
+
     category = models.CharField(max_length=6, choices=category_assortment, verbose_name='Категория')
     price = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Цена')
+    position_id = models.AutoField(primary_key=True)
+    qty = models.PositiveIntegerField(choices=int_choices, default=1)
 
     def __str__(self):
         return self.position_name
@@ -65,7 +67,7 @@ class Order(models.Model):
 class Extra(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, verbose_name='Клиент')
     position = models.ForeignKey(Position, on_delete=models.CASCADE, verbose_name='Каталог')
-    qty = models.IntegerField(verbose_name='Колличество')
+    qty = models.PositiveIntegerField(verbose_name='Колличество')
 
     def __str__(self):
         return f'{self.position.category} | {self.position.price}'

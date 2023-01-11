@@ -13,20 +13,19 @@ class PositionSerializers(serializers.ModelSerializer):
 
     class Meta:
         model = Position
-        fields = ('id', 'position_name', 'category', 'price',)
+        fields = ('position_id', 'position_name', 'category', 'price', 'qty')
 
 
 class ExtraSerializers(serializers.ModelSerializer):
-    position = serializers.CharField(source='position.position_name')
-#    order = serializers.CharField(source='order.id', read_only=True)
+    position = serializers.CharField(source='position.position_name', read_only=True)
+#    position_id = serializers.IntegerField(required=False)
 
-    def create(self, validated_data):
-        return Extra.objects.create(**validated_data)
+    # def create(self, validated_data):
+    #     return Extra.objects.create(**validated_data)
 
     class Meta:
         model = Extra
-        fields = ('position', 'qty')
-#        fields = ('order', 'position', 'qty')
+        fields = ('position_id', 'position', 'qty')
 
 
 class OrderSerializers(serializers.ModelSerializer):
@@ -37,14 +36,56 @@ class OrderSerializers(serializers.ModelSerializer):
         model = Order
         fields = ('client_name', 'comment', 'delivery', 'positions')
 
-    def create(self, validated_data):
+    # def create(self, validated_data):
+    #
+    #     positions_data = validated_data.pop('positions')
+    #     order = Order.objects.create(**validated_data)
+    #     for position_data in positions_data:
+    #         Extra.objects.create(order=order, **position_data)
+    #     return order
 
-        positions = validated_data['positions']
+# --------------------------
 
-        extra_serializer = ExtraSerializers(data=positions)
-        if extra_serializer.is_valid():
-            extra_serializer.save()
-        return Order.objects.create(**validated_data)
+        # positions = validated_data.pop('positions')
+        # extra_serializer = ExtraSerializers(data=positions)
+        # if extra_serializer.is_valid():
+        #     order = Order.objects.create(**validated_data)
+        #
+        #     validated_data['positions'] = positions.position_id
+        #     validated_data['positions'] = positions.position_name
+        #     validated_data['positions'] = positions.qty
+        #
+        #     # Здесь надо обработать твои позиции и посоздавать их
+        #     extra_serializer.save()
+        #
+        #     for extra in extra_serializer.data:
+        #         order.add(Extra.objects.create(**extra))
+        #     #
+        #
+        #     return order
+        #
+        # return extra_serializer.errors
+
+# --------------------
+
+        # positions_data = validated_data.pop('positions')
+        # order = Order.objects.create(**validated_data)
+        #
+        # for position in positions_data:
+        #     position, created = Extra.objects.get_or_create(name=position['name'])
+        #     order.positions.add(position)
+        # return order
+
+# --------------------
+
+        # positions = validated_data['positions']
+        #
+        # extra_serializer = ExtraSerializers(data=positions)
+        # if extra_serializer.is_valid():
+        #     extra_serializer.save()
+        # return Order.objects.create(**validated_data)
+
+# ----------------------
 
         # return Order.objects.create(
         #     client_name=validated_data['client_name'],
@@ -54,11 +95,15 @@ class OrderSerializers(serializers.ModelSerializer):
         #     qty=validated_data['qty']
         # )
 
+# ------------------------
+
         # obj: Order = super().create(**validated_data)
         # positions=validated_data["positions"]
         # client_name=validated_data["client_name"]
         #
         # return Order(**validated_data)
+
+# -------------------------
 
     # def create(self, validated_data):
     #     obj: Order = super().create(validated_data)
