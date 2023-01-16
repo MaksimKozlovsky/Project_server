@@ -17,15 +17,12 @@ class PositionSerializers(serializers.ModelSerializer):
 
 
 class ExtraSerializers(serializers.ModelSerializer):
-    position = serializers.CharField(source='position.position_name', read_only=True)
+#    position = serializers.CharField(source='position.position_name', read_only=True)
 #    position_id = serializers.IntegerField(required=False)
-
-    # def create(self, validated_data):
-    #     return Extra.objects.create(**validated_data)
 
     class Meta:
         model = Extra
-        fields = ('position_id', 'position', 'qty')
+        fields = ('position_id', 'qty')
 
 
 class OrderSerializers(serializers.ModelSerializer):
