@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.contrib import messages
 
-from svr.models import Client, Order, Position, Extra
+from svr.models import Client, Order, Position, Temp
 
 
 # Register your models here.
@@ -25,7 +25,7 @@ class ClientAdmin(admin.ModelAdmin):
 
 class Admin(admin.TabularInline):
     extra = 1
-    model = Extra
+    model = Temp
 
 
 @admin.register(Order)
@@ -36,8 +36,8 @@ class OrderAdmin(admin.ModelAdmin):
     search_fields = ('client_name',)
 
 
-@admin.register(Extra)
-class ExtraAdmin(admin.ModelAdmin):
+@admin.register(Temp)
+class TempAdmin(admin.ModelAdmin):
 
     list_display = ('order', 'position', 'qty')
     list_filter = ('order',)

@@ -6,9 +6,9 @@ from rest_framework.response import Response
 from django.http import JsonResponse
 
 
-from svr.models import Client, Order, Position, Extra
+from svr.models import Client, Order, Position, Temp
 from svr.serializers import ClientSerializer, OrderSerializers, \
-    PositionSerializers, ExtraSerializers
+    PositionSerializers, TempSerializers
 
 
 @api_view(['GET'])
@@ -46,19 +46,17 @@ class OrderViewSet(viewsets.ModelViewSet):
                      Client.objects.create(client_name=order_data.pop('client_name'))
 
             order = Order.objects.create(client_name=client, **order_data)
-            extras = [
-                Extra.objects.create(order=order, position_id=position_data["position_id"], qty=position_data["qty"])
-                # Extra.objects.create(order=order, position_id=position_data["position_id"],
-                #                      position=position_data["position_name"], qty=position_data["qty"])
+            temps = [
+                Temp.objects.create(order=order, position_id=position_data["position_id"], qty=position_data["qty"])
                 for position_data in positions_data
             ]
-            order.extra_set.set(extras)
+            order.temp_set.set(temps)
             return Response(self.serializer_class(order).data)
 
         return Response(serializer.errors)
 
 
-class ExtraViewSet(viewsets.ModelViewSet):
-    queryset = Extra.objects.all()
-    serializer_class = ExtraSerializers
+class TempViewSet(viewsets.ModelViewSet):
+    queryset = Temp.objects.all()
+    serializer_class = TempSerializers
 
