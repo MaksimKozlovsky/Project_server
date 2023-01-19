@@ -9,8 +9,14 @@ from svr.models import Client, Order, Position, Temp
 
 # Register your models here.
 
+class TempInLine(admin.TabularInline):
+    extra = 1
+    model = Temp
+
+
 @admin.register(Position)
 class PositionAdmin(admin.ModelAdmin):
+    inlines = (TempInLine,)
     list_display = ('position_name', 'category', 'price',)
     list_filter = ('category',)
     search_fields = ('position_name',)
@@ -23,14 +29,9 @@ class ClientAdmin(admin.ModelAdmin):
     search_fields = ('client_name',)
 
 
-class Admin(admin.TabularInline):
-    extra = 1
-    model = Temp
-
-
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    inlines = (Admin,)
+    inlines = (TempInLine,)
     list_display = ('client_name', 'comment', 'delivery',)
     list_filter = ('client_name',)
     search_fields = ('client_name',)
