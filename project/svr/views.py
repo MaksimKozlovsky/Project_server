@@ -40,10 +40,7 @@ class OrderViewSet(viewsets.ModelViewSet):
             print(order_data)
             print(positions_data)
 
-#            client = Client.objects.filter(client_name=order_data.pop("client_name")).first()
-
-            client = Client.objects.filter(client_name=order_data.get("client_name")).first() or \
-                     Client.objects.create(client_name=order_data.pop('client_name'))
+            client = Client.objects.get_or_create(client_name=order_data.pop('client_name'))[0]
 
             order = Order.objects.create(client_name=client, **order_data)
             temps = [
