@@ -21,6 +21,13 @@ class ClientViewSet(viewsets.ModelViewSet):
     serializer_class = ClientSerializer
 
 
+@api_view(['GET'])
+def get_history(request):
+    his = Order.objects.filter(client_name=30)
+    serializer = OrderSerializers(his, many=True)
+    return Response(serializer.data)
+
+
 class PositionViewSet(viewsets.ModelViewSet):
     queryset = Position.objects.all()
     serializer_class = PositionSerializers
@@ -56,4 +63,5 @@ class OrderViewSet(viewsets.ModelViewSet):
 class TempViewSet(viewsets.ModelViewSet):
     queryset = Temp.objects.all()
     serializer_class = TempSerializers
+
 

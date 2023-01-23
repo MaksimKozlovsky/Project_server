@@ -29,15 +29,26 @@ class Position(models.Model):
 class Client(models.Model):
 
     client_st = (
-        ('S', 'Silver'),
-        ('G', 'Gold'),
-        ('P', 'Platinum'),
+        ('Silver', 'Silver'),
+        ('Gold', 'Gold'),
+        ('Platinum', 'Platinum'),
     )
 
     client_name = models.CharField(max_length=100, verbose_name='Клиент')
-    client_status = models.CharField(max_length=1, choices=client_st, null=True, blank=True)
-    telegram_id = models.PositiveIntegerField(null=True, blank=True)
+    client_status = models.CharField(max_length=8, choices=client_st, default='Silver', null=True, blank=True)
+    telegram_id = models.CharField(max_length=100, null=True, blank=True)
     telegram_payload = models.JSONField(null=True, blank=True)
+
+    # @property
+    # def client_status(self):
+    #
+    #     total_orders = sum(obj.total for obj in self.order.all())
+    #     if total_orders > 5:
+    #         client_status == 'Gold'
+    #     elif total_orders > 10:
+    #         client_status == 'Platinum'
+    #
+    #     return client_status
 
     def __str__(self):
         return self.client_name

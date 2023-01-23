@@ -24,7 +24,7 @@ class PositionAdmin(admin.ModelAdmin):
 
 @admin.register(Client)
 class ClientAdmin(admin.ModelAdmin):
-    list_display = ('client_name', 'client_status',)
+    list_display = ('id', 'client_name', 'client_status',)
     list_filter = ('client_status',)
     search_fields = ('client_name',)
 

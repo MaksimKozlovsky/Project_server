@@ -30,4 +30,3 @@ class OrderSerializers(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = ('client_name', 'comment', 'delivery', 'positions')
-
